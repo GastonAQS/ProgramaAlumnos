@@ -1,20 +1,39 @@
 #include <iostream>
-
+#include <fstream>
+//#include "struct.cpp"
+#include "logicaArch.cpp"
 using namespace std;
 
-const int MAX_ALU = 40;
 
-struct Alumno
+
+void intrcmb(Alumno a, Alumno b)
 {
-    int dni;
-    int edad;
-    string nombre;
-    string dir;
-};
+    Alumno aux;
+    aux = a;
+    a = b;
+    b = aux;
+}
 
-Alumno alu[MAX_ALU+1];
+void OrdxBur(short card)
+{
+    int i, j, bandera;
+    Alumno aux;
+    for(i = 1; i < card; i++)
+    {
+        bandera = 0;
+        for(j = card-1; j>=i; j--)
+        {
+            if(alu[j-1].dni>alu[j].dni)
+            {
+                intrcmb(alu[j],alu[j-1]);
+                bandera = 1;
+            }
+        }
+        if (bandera == 0) break;
+    }
+}
 
-void cantidadAlumnos(Alumno alu[],short &card)
+void cantidadAlumnos(short &card)
 {
     cout << "Ingrese la cantidad de alumnos" << endl;
     cin >> card;
@@ -23,11 +42,19 @@ void cantidadAlumnos(Alumno alu[],short &card)
         cout << "Ingrese dni para el " << i << " alumno" << endl;
         cin >> alu[i].dni;
         
+        cout << "Ingrese edad para el " << i << " alumno" << endl;
+        cin >> alu[i].edad;
 
+        cout << "Ingrese nombre para el " << i << " alumno" << endl;
+        cin >> alu[i].nombre;
 
-
+        cout << "Ingrese direccion para el " << i << " alumno" << endl;
+        cin >> alu[i].dir;
     }
+    OrdxBur(card);
 }
+
+
 
 
 
@@ -41,7 +68,6 @@ short menu()
     cout << "2. Reescribir datos" << endl;
     cout << "3. Eliminar datos" << endl;
     cout << "4. Ver todos los alumnos" << endl;
-    cout << "5. Guardar datos" << endl;
     cout << "6. Finalizar" << endl;
     cin >> opc;
 
@@ -53,11 +79,12 @@ short menu()
 
 int main(int argc, char const *argv[])
 {
-    Alumno alu;
     short card;
     int dniAux;
 
-    cantidadAlumnos(alu,card);
+
+
+    cantidadAlumnos(card);
 
     do
     {
