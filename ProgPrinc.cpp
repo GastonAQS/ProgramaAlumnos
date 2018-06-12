@@ -1,20 +1,26 @@
 #include <iostream>
 #include <fstream>
-//#include "struct.cpp"
-#include "logicaArch.cpp"
 using namespace std;
 
+const int MAX_ALU = 40;
 
-
-void intrcmb(Alumno *a, Alumno *b)
+struct Alumno
 {
-    Alumno* aux = new Alumno;
+    int dni;
+    int edad;
+    string nombre;
+    string dir;
+};
+
+void intrcmb(Alumno a, Alumno b)
+{
+    Alumno aux;
     aux = a;
     a = b;
     b = aux;
 }
 
-void OrdxBur(short card)
+void OrdxBur(Alumno alu[],short card)
 {
     int i, j, bandera;
     Alumno aux;
@@ -23,7 +29,7 @@ void OrdxBur(short card)
         bandera = 0;
         for(j = card-1; j>=i; j--)
         {
-            if(alu[j-1]->dni>alu[j]->dni)
+            if(alu[j-1].dni>alu[j].dni)
             {
                 intrcmb(alu[j],alu[j-1]);
                 bandera = 1;
@@ -33,7 +39,7 @@ void OrdxBur(short card)
     }
 }
 
-int busquedaBinaria(short card,int auxDNI)
+int busquedaBinaria(Alumno alu[], short card,int auxDNI)
 {
     int prim=1;
     int medio=0;
@@ -43,12 +49,12 @@ int busquedaBinaria(short card,int auxDNI)
     while(prim <= ult)
     {
         medio = (prim+ult)/2;
-        if(auxDNI == alu[medio]->dni)
+        if(auxDNI == alu[medio].dni)
         {
             return medio;
         }else
         {
-            if(alu[medio]->dni > auxDNI)
+            if(alu[medio].dni > auxDNI)
             {
                 ult = medio - 1;
             }else
@@ -61,37 +67,38 @@ int busquedaBinaria(short card,int auxDNI)
 
 }
 
-void cantidadAlumnos(short &card)
+void cantidadAlumnos(Alumno alu[],short &card)
 {
     cout << "Ingrese la cantidad de alumnos" << endl;
     cin >> card;
     for (int i = 1; i < card ; i++)
     {
         cout << "Ingrese dni para el " << i << " alumno" << endl;
-        cin >> alu[i]->dni;
+        cin >> alu[i].dni;
         
         cout << "Ingrese edad para el " << i << " alumno" << endl;
-        cin >> alu[i]->edad;
+        cin >> alu[i].edad;
 
         cout << "Ingrese nombre para el " << i << " alumno" << endl;
-        cin >> alu[i]->nombre;
+        cin >> alu[i].nombre;
 
         cout << "Ingrese direccion para el " << i << " alumno" << endl;
-        cin >> alu[i]->dir;
+        cin >> alu[i].dir;
     }
-    OrdxBur(card);
+    OrdxBur(alu,card);
 }
 
-bool eliminarAlumno(short card,int posicion)
+bool eliminarAlumno(Alumno alu[], short card,int posicion)
 {
     if(posicion == -1) return false;
-    alu[posicion]->dni=-1;
-    alu[posicion]->nombre="";
-    alu[posicion]->edad=-1;
-    alu[posicion]->dir="";
-    OrdxBur(card);
+    alu[posicion].dni=-1;
+    alu[posicion].nombre="";
+    alu[posicion].edad=-1;
+    alu[posicion].dir="";
+    OrdxBur(alu,card);
     return true;
 }
+
 
 void menu()
 {
@@ -107,16 +114,7 @@ int main(int argc, char const *argv[])
 {
     short card,opc;
     int dniAux,aux;
-
-
-    if(abrirArch())
-    {
-        cout << "Archivo abierto" << endl;
-    } else
-    {
-        cantidadAlumnos(card);
-        guardarArch(card);
-    }
+    Alumno alu[MAX_ALU];
 
     do
     {
@@ -127,20 +125,20 @@ int main(int argc, char const *argv[])
             case 1:
                 cout << "Ingrese el numero de dni a buscar" << endl;
                 cin >> dniAux;
-                aux = busquedaBinaria(card,dniAux);
+                aux = busquedaBinaria(alu,card,dniAux);
                 if(aux==-1)
                 {
                     cout << "No se encontro el alumno" << endl;
                 }else
                 {
-                    cout << "Nombre: " << alu[aux]->nombre << endl;
-                    cout << "Edad: " << alu[aux]->edad << endl;
+                    cout << "Nombre: " << alu[aux].nombre << endl;
+                    cout << "Edad: " << alu[aux].edad << endl;
                 }
                 break;
             case 2:
                 cout << "Ingrese el dni del alumno a eliminar" << endl;
                 cin >> dniAux;
-                if(eliminarAlumno(card,busquedaBinaria(card,dniAux)))
+                if(eliminarAlumno(alu,card,busquedaBinaria(alu,card,dniAux)))
                 {
                     cout << "Eliminado exitosamente" << endl;
                 }else
@@ -152,7 +150,7 @@ int main(int argc, char const *argv[])
                 cout << "Mostrando alumnos..." << endl;
                 for(int i = 1; i < card; i++)
                 {
-                    cout << "DNI: " << alu[i]->dni << endl;
+                    cout << "DNI: " << alu[i].dni << endl;
                     cout << "-----------------" << endl;
                 }
                 break;
@@ -167,7 +165,3 @@ int main(int argc, char const *argv[])
 
     return 0;
 }
-
-
-
-
