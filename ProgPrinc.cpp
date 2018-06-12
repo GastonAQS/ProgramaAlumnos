@@ -33,6 +33,34 @@ void OrdxBur(short card)
     }
 }
 
+int busquedaBinaria(short card,int auxDNI)
+{
+    int prim=1;
+    int medio=0;
+    int ult = card;
+    
+
+    while(prim <= ult)
+    {
+        medio = (prim+ult)/2;
+        if(auxDNI == alu[medio].dni)
+        {
+            return medio;
+        }else
+        {
+            if(alu[medio].dni > auxDNI)
+            {
+                ult = medio - 1;
+            }else
+            {
+                prim = medio + 1;
+            }
+        }
+    }
+    return -1;
+
+}
+
 void cantidadAlumnos(short &card)
 {
     cout << "Ingrese la cantidad de alumnos" << endl;
