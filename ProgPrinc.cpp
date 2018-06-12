@@ -6,9 +6,9 @@ using namespace std;
 
 
 
-void intrcmb(Alumno a, Alumno b)
+void intrcmb(Alumno *a, Alumno *b)
 {
-    Alumno aux;
+    Alumno* aux = new Alumno;
     aux = a;
     a = b;
     b = aux;
@@ -23,7 +23,7 @@ void OrdxBur(short card)
         bandera = 0;
         for(j = card-1; j>=i; j--)
         {
-            if(alu[j-1].dni>alu[j].dni)
+            if(alu[j-1]->dni>alu[j]->dni)
             {
                 intrcmb(alu[j],alu[j-1]);
                 bandera = 1;
@@ -43,12 +43,12 @@ int busquedaBinaria(short card,int auxDNI)
     while(prim <= ult)
     {
         medio = (prim+ult)/2;
-        if(auxDNI == alu[medio].dni)
+        if(auxDNI == alu[medio]->dni)
         {
             return medio;
         }else
         {
-            if(alu[medio].dni > auxDNI)
+            if(alu[medio]->dni > auxDNI)
             {
                 ult = medio - 1;
             }else
@@ -68,63 +68,102 @@ void cantidadAlumnos(short &card)
     for (int i = 1; i < card ; i++)
     {
         cout << "Ingrese dni para el " << i << " alumno" << endl;
-        cin >> alu[i].dni;
+        cin >> alu[i]->dni;
         
         cout << "Ingrese edad para el " << i << " alumno" << endl;
-        cin >> alu[i].edad;
+        cin >> alu[i]->edad;
 
         cout << "Ingrese nombre para el " << i << " alumno" << endl;
-        cin >> alu[i].nombre;
+        cin >> alu[i]->nombre;
 
         cout << "Ingrese direccion para el " << i << " alumno" << endl;
-        cin >> alu[i].dir;
+        cin >> alu[i]->dir;
     }
     OrdxBur(card);
 }
 
-
-
-
-
-
-short menu()
+bool eliminarAlumno(short card,int posicion)
 {
-    int dniAux;
-    short opc;
+    if(posicion == -1) return false;
+    alu[posicion]->dni=-1;
+    alu[posicion]->nombre="";
+    alu[posicion]->edad=-1;
+    alu[posicion]->dir="";
+    OrdxBur(card);
+    return true;
+}
+
+void menu()
+{
     cout << "Ingrese una opcion" << endl;
     cout << "1. Ver datos de un alumno" << endl;
-    cout << "2. Reescribir datos" << endl;
-    cout << "3. Eliminar datos" << endl;
-    cout << "4. Ver todos los alumnos" << endl;
-    cout << "6. Finalizar" << endl;
-    cin >> opc;
-
-    return opc;
-    
-    
+    cout << "2. Eliminar datos" << endl;
+    cout << "3. Ver todos los alumnos" << endl;
+    cout << "4. Finalizar" << endl;
 } 
 
 
 int main(int argc, char const *argv[])
 {
-    short card;
-    int dniAux;
+    short card,opc;
+    int dniAux,aux;
 
 
-
-    cantidadAlumnos(card);
+    if(abrirArch())
+    {
+        cout << "Archivo abierto" << endl;
+    } else
+    {
+        cantidadAlumnos(card);
+        guardarArch(card);
+    }
 
     do
     {
-        switch(menu())
+        menu();
+        cin >> opc;
+        switch(opc)
         {
             case 1:
                 cout << "Ingrese el numero de dni a buscar" << endl;
                 cin >> dniAux;
+                aux = busquedaBinaria(card,dniAux);
+                if(aux==-1)
+                {
+                    cout << "No se encontro el alumno" << endl;
+                }else
+                {
+                    cout << "Nombre: " << alu[aux]->nombre << endl;
+                    cout << "Edad: " << alu[aux]->edad << endl;
+                }
                 break;
-
+            case 2:
+                cout << "Ingrese el dni del alumno a eliminar" << endl;
+                cin >> dniAux;
+                if(eliminarAlumno(card,busquedaBinaria(card,dniAux)))
+                {
+                    cout << "Eliminado exitosamente" << endl;
+                }else
+                {
+                    cout << "DNI invalido" << endl;
+                }
+                break;
+            case 3:
+                cout << "Mostrando alumnos..." << endl;
+                for(int i = 1; i < card; i++)
+                {
+                    cout << "DNI: " << alu[i]->dni << endl;
+                    cout << "-----------------" << endl;
+                }
+                break;
+            case 4:
+                cout << "Finalizando..." << endl;
+                break;
+            default:
+                cout << "Opcion invalida";
+                break;
         }
-    } while(menu()!=6);
+    } while(opc!=4);
 
     return 0;
 }

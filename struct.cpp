@@ -11,4 +11,4 @@ struct Alumno
     string dir;
 };
 
-Alumno alu[MAX_ALU+1];
+Alumno** alu = new Alumno*[MAX_ALU+1];
