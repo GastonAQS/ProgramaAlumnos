@@ -1,5 +1,8 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <bits/basic_string.h>
+#include <stdlib.h>
 using namespace std;
 
 const int MAX_ALU = 40;
@@ -11,57 +14,104 @@ struct Alumno
     string nombre;
     string dir;
 };
-// --------------------------------------------------------------------------------------------------------
-void intrcmb(Alumno* a, Alumno* b)
+// Declaracion del registro alumnos y sus campos.
+void intrcmb(Alumno a, Alumno b)
 {
-    Alumno* aux;
+    Alumno aux;
     aux = a;
     a = b;
     b = aux;
 }
-// --------------------------------------------------------------------------------------------------------
-void OrdxBur(Alumno* alu[],short card)
+// Funcion que intercambia a por b, utilizada en el ordenamiento.
+void OrdxBur(Alumno alu[],short card)
 {
     int i, j, bandera;
     Alumno aux;
-    for(i = 1; i < card; i++)
+    for(i = 2; i < card; i++)
     {
         bandera = 0;
-        for(j = card-1; j>=i; j--)
+        for(j = 1; j<card; j++)
         {
-            if(alu[j-1]->dni>alu[j]->dni)
+            cout << "burbuja";
+            if(alu[j].dni>alu[j+1].dni)
             {
-                intrcmb(alu[j],alu[j-1]);
+                intrcmb(alu[j+1],alu[j]);
                 bandera = 1;
             }
         }
         if (bandera == 0) break;
     }
 }
-// --------------------------------------------------------------------------------------------------------
-void guardarArch(Alumno* alu[],fstream &arch,short card)
+// Ordena el registro en base a numeros de dni para poder utilizar busqueda binaria.
+void guardarArch(Alumno alu[],ofstream &arch,short card)
 {
+    arch.open("alumnos.txt");
     for(int i = 1; i < card; i++)
     {
-        arch << alu[i]->dni;
-        arch << alu[i]->edad;
-        arch << alu[i]->nombre;
-        arch << alu[i]->dir;
+        //cout << "j";
+        arch << alu[i].dni << endl;;
+        arch << alu[i].edad << endl;
+        arch << alu[i].nombre << endl;
+        arch << alu[i].dir << endl;
     }
+    arch.close();
 }
-// --------------------------------------------------------------------------------------------------------
-void leerArch(Alumno* alu[],fstream arch, short card)
+// Guarda los datos de los alumnos en alumnos.txt.
+void guarda_card(ofstream &archCardO,short &card)
 {
-    for(int i = 1; i < card; i++)
+    archCardO.open("card.txt");
+    archCardO << card;
+    archCardO.close();
+}
+// Guarda en el archivo card.txt la cardinalidad.
+void carga_card(ifstream &archCardI,short &card)
+{
+    string cardS;
+    archCardI.open("card.txt");
+    if(archCardI.is_open())
     {
-        arch >> alu[i]->dni;
-        arch >> alu[i]->edad;
-        arch >> alu[i]->nombre;
-        arch >> alu[i]->dir;
+        while(!archCardI.eof())
+        {
+            getline(archCardI,cardS);
+        }
+    }
+    card = atoi(cardS.c_str());
+    archCardI.close();
+}
+// Carga del archivo card.txt el dato del cardinal.
+bool leerArch(Alumno alu[],ifstream &arch, short card)
+{
+    arch.open("alumnos.txt");
+    string dniS,edadS,nombreS,dirS;
+    int i = 1;
+    
+    if(arch.is_open())
+    {
+        while(!arch.eof())
+        {
+            getline(arch,dniS);
+            getline(arch,edadS);
+            getline(arch,nombreS);
+            getline(arch,dirS);
+            alu[i].dni=atoi(dniS.c_str());
+            alu[i].edad=atoi(edadS.c_str());
+            alu[i].nombre=nombreS;
+            alu[i].dir=dirS;
+            cout << alu[i].dni << endl;
+            cout << alu[i].edad << endl;
+            cout << alu[i].nombre << endl;
+            cout << alu[i].dir << endl;
+            i++;
+            
+        }
+        return true;
+    }else
+    {
+        return false;
     }
 }
-// --------------------------------------------------------------------------------------------------------
-int busquedaBinaria(Alumno* alu[], short card,int auxDNI)
+// Lee el archivo llamado alumnos.txt.
+int busquedaBinaria(Alumno alu[], short card,int auxDNI)
 {
     int prim=1;
     int medio=0;
@@ -71,12 +121,12 @@ int busquedaBinaria(Alumno* alu[], short card,int auxDNI)
     while(prim <= ult)
     {
         medio = (prim+ult)/2;
-        if(auxDNI == alu[medio]->dni)
+        if(auxDNI == alu[medio].dni)
         {
             return medio;
         }else
         {
-            if(alu[medio]->dni > auxDNI)
+            if(alu[medio].dni > auxDNI)
             {
                 ult = medio - 1;
             }else
@@ -88,40 +138,43 @@ int busquedaBinaria(Alumno* alu[], short card,int auxDNI)
     return -1;
 
 }
-// --------------------------------------------------------------------------------------------------------
-void cantidadAlumnos(Alumno* alu[],short &card)
+// Busca el alumno en base a un numero de dni y devuelve su posicion.
+void cantidadAlumnos(Alumno alu[],short &card)
 {
+    ofstream archCardO;
     cout << "Ingrese la cantidad de alumnos" << endl;
     cin >> card;
+    guarda_card(archCardO,card);
     for (int i = 1; i < card ; i++)
     {
         cout << "Ingrese dni para el " << i << " alumno" << endl;
-        cin >> alu[i]->dni;
+        cin >> alu[i].dni;
         
         cout << "Ingrese edad para el " << i << " alumno" << endl;
-        cin >> alu[i]->edad;
+        cin >> alu[i].edad;
 
         cout << "Ingrese nombre para el " << i << " alumno" << endl;
-        cin >> alu[i]->nombre;
+        getline(cin,alu[i].nombre);
+        getline(cin,alu[i].nombre);
 
-        cout << "Ingrese direccion para el " << i << " alumno" << endl;
-        cin >> alu[i]->dir;
+        cout << "Ingrese direccion para el " << i << " alumno" << endl; 
+        getline(cin,alu[i].dir);
     }
     OrdxBur(alu,card);
 }
-// --------------------------------------------------------------------------------------------------------
-bool eliminarAlumno(Alumno* alu[], short card,int posicion)
+// Toma un numero de alumnos y pide los datos en base a ese numero(cardinal).
+bool eliminarAlumno(Alumno alu[], short card,int posicion)
 {
     if(posicion == -1) return false;
-    alu[posicion]->dni=-1;
-    alu[posicion]->nombre="";
-    alu[posicion]->edad=-1;
-    alu[posicion]->dir="";
+    alu[posicion].dni=-1;
+    alu[posicion].nombre="";
+    alu[posicion].edad=-1;
+    alu[posicion].dir="";
     OrdxBur(alu,card);
     return true;
 }
-// --------------------------------------------------------------------------------------------------------
-void busquedaAlumno(Alumno* alu[],int dniAux, short card)
+// Deja en blanco los campos del alumno deseado y vuelve a ordenar el array.
+void busquedaAlumno(Alumno alu[],int dniAux, short card)
 {
     int aux;
     aux = busquedaBinaria(alu,card,dniAux);
@@ -130,10 +183,27 @@ void busquedaAlumno(Alumno* alu[],int dniAux, short card)
                     cout << "No se encontro el alumno" << endl;
                 }else
                 {
-                    cout << "Nombre: " << alu[aux]->nombre << endl;
-                    cout << "Edad: " << alu[aux]->edad << endl;
+                    cout << "Nombre: " << alu[aux].nombre << endl;
+                    cout << "Edad: " << alu[aux].edad << endl;
                 }
 }
+// Busca un alumno por numero de dni.
+void mostrarAlumnos(Alumno alu[],short card)
+{
+    cout << "Mostrando alumnos..." << endl;
+                for(int i = 1; i <= card; i++)
+                {
+                    if(alu[i].dni!=-1)
+                    {
+                    cout << "DNI: " << alu[i].dni << endl;
+                    cout << "EDAD: " << alu[i].edad << endl;
+                    cout << "NOMBRE: " << alu[i].nombre << endl;
+                    cout << "DIRECCION: " << alu[i].dir << endl;
+                    cout << "-----------------" << endl;
+                    }
+                }
+}
+// Muestra todos los alumnos del archivo.
 void menu()
 {
     cout << "Ingrese una opcion" << endl;
@@ -143,15 +213,27 @@ void menu()
     cout << "4. Cargar datos" << endl;
     cout << "5. Finalizar" << endl;
 } 
-// --------------------------------------------------------------------------------------------------------
+// Menu de opciones.
 int main(int argc, char const *argv[])
 {
     short card,opc;
     int dniAux;
-    Alumno* alu[MAX_ALU];
-    fstream arch;
-    arch.open("alumnos.txt",ios::in|ios::out);
-    guardarArch(alu,arch,card);
+    Alumno alu[MAX_ALU];
+    ofstream archO;
+    ifstream archI,archCardI;
+
+    carga_card(archCardI,card);
+
+    if(leerArch(alu,archI,card))
+    {
+        cout << "Archivo leido.." << endl;
+    }else
+    {
+        cout << "Se deben cargar datos.. Presione enter" << endl;
+        cin.get();
+        cantidadAlumnos(alu,card);
+        guardarArch(alu,archO,card);
+    }
     
     do
     {
@@ -176,15 +258,10 @@ int main(int argc, char const *argv[])
                 }
                 break;
             case 3:
-                cout << "Mostrando alumnos..." << endl;
-                for(int i = 1; i < card; i++)
-                {
-                    cout << "DNI: " << alu[i]->dni << endl;
-                    cout << "-----------------" << endl;
-                }
+                mostrarAlumnos(alu,card);
                 break;
             case 4:
-                cantidadAlumnos(alu,card);
+                
                 break;
             case 5:
                 cout << "Finalizando..." << endl;
