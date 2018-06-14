@@ -293,7 +293,7 @@ int main(int argc, char const *argv[])
         cout << "Se deben cargar datos.. Presione enter" << endl;
         cin.get();
         cantidadAlumnos(alu,card);
-    }
+    } // Se asegura de que si no esta creado el archivo se carguen datos.
     
     do
     {
@@ -334,13 +334,13 @@ int main(int argc, char const *argv[])
                 break;
             case 6:
                 cout << "Finalizando..." << endl;
-                guardarArch(alu,archO,card);
+                guardarArch(alu,archO,card); // Al salir del programa se guarda en el archivo.
                 break;
             default:
                 cout << "Opcion invalida";
                 break;
         }
-    } while(opc!=6);
+    } while(opc!=6); // Seleccion multiple.
 
     return 0;
 } // Funcion principal.
