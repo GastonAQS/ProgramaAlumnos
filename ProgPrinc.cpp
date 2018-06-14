@@ -157,7 +157,7 @@ void cantidadAlumnos(Alumno alu[],short &card)
         getline(cin,alu[i].dir);
     }
     OrdxBur(alu,card);
-}
+} 
 // Toma un numero de alumnos y pide los datos en base a ese numero(cardinal).
 bool eliminarAlumno(Alumno alu[], short card,int posicion)
 {
@@ -168,7 +168,7 @@ bool eliminarAlumno(Alumno alu[], short card,int posicion)
     alu[posicion].dir="";
     OrdxBur(alu,card);
     return true;
-}
+} 
 // Deja en blanco los campos del alumno deseado y vuelve a ordenar el array.
 void busquedaAlumno(Alumno alu[],int dniAux,short card)
 {
@@ -183,7 +183,7 @@ void busquedaAlumno(Alumno alu[],int dniAux,short card)
                     cout << "Edad: " << alu[aux].edad << endl;
                     cout << "Direccion: " << alu[aux].dir << endl;
                 }
-}
+} 
 // Busca un alumno por numero de dni.
 bool editarAlumno(Alumno alu[],int dniAux,short card)
 {
@@ -229,7 +229,8 @@ bool editarAlumno(Alumno alu[],int dniAux,short card)
         OrdxBur(alu,card);
         return true;
     }
-} // Edita datos de un alumno en base a su DNI.
+} 
+// Edita datos de un alumno en base a su DNI.
 void agregarAlumno(Alumno alu[],short &card)
 {
     ofstream archCardO;
@@ -246,6 +247,7 @@ void agregarAlumno(Alumno alu[],short &card)
     getline(cin,alu[card-1].dir);
     OrdxBur(alu,card);
 }
+// Agrega un alumno al final del array.
 void mostrarAlumnos(Alumno alu[],short card)
 {
     cout << "Mostrando alumnos..." << endl;
@@ -341,4 +343,4 @@ int main(int argc, char const *argv[])
     } while(opc!=6);
 
     return 0;
-}
+} // Funcion principal.
