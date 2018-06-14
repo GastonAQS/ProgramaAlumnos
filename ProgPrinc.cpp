@@ -15,7 +15,7 @@ struct Alumno
     string dir;
 };
 // Declaracion del registro alumnos y sus campos.
-void intrcmb(Alumno a, Alumno b)
+void intrcmb(Alumno &a, Alumno &b)
 {
     Alumno aux;
     aux = a;
@@ -25,21 +25,17 @@ void intrcmb(Alumno a, Alumno b)
 // Funcion que intercambia a por b, utilizada en el ordenamiento.
 void OrdxBur(Alumno alu[],short card)
 {
-    int i, j, bandera;
-    Alumno aux;
-    for(i = 2; i < card; i++)
+    int i,j;
+
+    for(i = 1; i < card; i++)
     {
-        bandera = 0;
-        for(j = 1; j<card; j++)
+        for(j = 1; j<card-1; j++)
         {
-            cout << "burbuja";
             if(alu[j].dni>alu[j+1].dni)
             {
                 intrcmb(alu[j+1],alu[j]);
-                bandera = 1;
             }
         }
-        if (bandera == 0) break;
     }
 }
 // Ordena el registro en base a numeros de dni para poder utilizar busqueda binaria.
@@ -84,7 +80,6 @@ bool leerArch(Alumno alu[],ifstream &arch, short card)
     arch.open("alumnos.txt");
     string dniS,edadS,nombreS,dirS;
     int i = 1;
-    
     if(arch.is_open())
     {
         while(!arch.eof())
@@ -102,8 +97,8 @@ bool leerArch(Alumno alu[],ifstream &arch, short card)
             cout << alu[i].nombre << endl;
             cout << alu[i].dir << endl;
             i++;
-            
         }
+        arch.close();
         return true;
     }else
     {
@@ -144,6 +139,7 @@ void cantidadAlumnos(Alumno alu[],short &card)
     ofstream archCardO;
     cout << "Ingrese la cantidad de alumnos" << endl;
     cin >> card;
+    card+=1;
     guarda_card(archCardO,card);
     for (int i = 1; i < card ; i++)
     {
@@ -174,7 +170,7 @@ bool eliminarAlumno(Alumno alu[], short card,int posicion)
     return true;
 }
 // Deja en blanco los campos del alumno deseado y vuelve a ordenar el array.
-void busquedaAlumno(Alumno alu[],int dniAux, short card)
+void busquedaAlumno(Alumno alu[],int dniAux,short card)
 {
     int aux;
     aux = busquedaBinaria(alu,card,dniAux);
@@ -185,13 +181,75 @@ void busquedaAlumno(Alumno alu[],int dniAux, short card)
                 {
                     cout << "Nombre: " << alu[aux].nombre << endl;
                     cout << "Edad: " << alu[aux].edad << endl;
+                    cout << "Direccion: " << alu[aux].dir << endl;
                 }
 }
 // Busca un alumno por numero de dni.
+bool editarAlumno(Alumno alu[],int dniAux,short card)
+{
+    char opc;
+    int aux = busquedaBinaria(alu,card,dniAux);
+    if(aux==-1) return false;
+    else
+    {
+        do
+        {
+            cout << "Ingrese dato a editar (D) DNI, (I) Direccion, (N) Nombre, (E) Edad." << endl;
+            cout << "(S) Salir." << endl;
+            cin >> opc;
+
+            switch(opc)
+            {
+                case 'D':
+                    cout << "Ingrese nuevo DNI." << endl;
+                    cin >> alu[aux].dni;
+                    break;
+                case 'I':
+                    cout << "Ingrese nueva direccion." << endl;
+                    getline(cin,alu[aux].dir);
+                    getline(cin,alu[aux].dir);
+                    break;
+                case 'N':
+                    cout << "Ingrese nuevo nombre." << endl;
+                    getline(cin,alu[aux].nombre);
+                    getline(cin,alu[aux].nombre);
+                    break;
+                case 'E':
+                    cout << "Ingrese nueva edad." << endl;
+                    cin >> alu[aux].edad;
+                    break;
+                case 'S':
+                    cout << "Saliendo..." << endl;
+                    break;
+                default:
+                    cout << "Opcion equivocada."<< endl;
+                    break;
+            }
+        }while(opc!='S');
+        OrdxBur(alu,card);
+        return true;
+    }
+} // Edita datos de un alumno en base a su DNI.
+void agregarAlumno(Alumno alu[],short &card)
+{
+    ofstream archCardO;
+    card+=1;
+    guarda_card(archCardO,card);
+    cout << "Ingrese DNI." << endl;
+    cin >> alu[card-1].dni;
+    cout << "Ingrese edad." << endl;
+    cin >> alu[card-1].edad;
+    cout << "Ingrese nombre." << endl;
+    getline(cin,alu[card-1].nombre);
+    getline(cin,alu[card-1].nombre);
+    cout << "Ingrese direccion." << endl;
+    getline(cin,alu[card-1].dir);
+    OrdxBur(alu,card);
+}
 void mostrarAlumnos(Alumno alu[],short card)
 {
     cout << "Mostrando alumnos..." << endl;
-                for(int i = 1; i <= card; i++)
+                for(int i = 1; i < card; i++)
                 {
                     if(alu[i].dni!=-1)
                     {
@@ -206,12 +264,13 @@ void mostrarAlumnos(Alumno alu[],short card)
 // Muestra todos los alumnos del archivo.
 void menu()
 {
-    cout << "Ingrese una opcion" << endl;
-    cout << "1. Ver datos de un alumno" << endl;
-    cout << "2. Eliminar datos" << endl;
-    cout << "3. Ver todos los alumnos" << endl;
-    cout << "4. Cargar datos" << endl;
-    cout << "5. Finalizar" << endl;
+    cout << "Ingrese una opcion." << endl;
+    cout << "1. Ver datos de un alumno." << endl;
+    cout << "2. Eliminar datos." << endl;
+    cout << "3. Ver todos los alumnos." << endl;
+    cout << "4. Editar alumno." << endl;
+    cout << "5. Agregar alumno." << endl;
+    cout << "6. Finalizar." << endl;
 } 
 // Menu de opciones.
 int main(int argc, char const *argv[])
@@ -232,7 +291,6 @@ int main(int argc, char const *argv[])
         cout << "Se deben cargar datos.. Presione enter" << endl;
         cin.get();
         cantidadAlumnos(alu,card);
-        guardarArch(alu,archO,card);
     }
     
     do
@@ -261,16 +319,26 @@ int main(int argc, char const *argv[])
                 mostrarAlumnos(alu,card);
                 break;
             case 4:
-                
+                cout << "Ingrese DNI del alumno a editar" << endl;
+                cin >> dniAux;
+                if(editarAlumno(alu,dniAux,card)) cout << "Editado correctamente" << endl;
+                else
+                {
+                    cout << "No se pudo encontrar el DNI ingresado." << endl;
+                }
                 break;
             case 5:
+                agregarAlumno(alu,card);
+                break;
+            case 6:
                 cout << "Finalizando..." << endl;
+                guardarArch(alu,archO,card);
                 break;
             default:
                 cout << "Opcion invalida";
                 break;
         }
-    } while(opc!=5);
+    } while(opc!=6);
 
     return 0;
 }
